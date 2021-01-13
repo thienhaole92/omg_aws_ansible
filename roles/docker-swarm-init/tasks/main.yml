@@ -1,0 +1,24 @@
+---
+- name: check if swarm has already been initialized
+  shell: docker node ls
+  register: swarm_status
+  ignore_errors: true
+
+- name: initialize docker swarm
+  command: docker swarm init --advertise-addr {{ inventory_hostname }}
+  when: swarm_status.rc != 0
+  run_once: true
+
+- name: get the manager join-token
+  shell: docker swarm join-token --quiet manager
+  register: manager_token
+
+- name: show manager token
+  debug: var=manager_token.stdout
+
+- name: get the worker join-token
+  shell: docker swarm join-token --quiet worker
+  register: worker_token
+
+- name: show worker token
+  debug: var=worker_token.stdout

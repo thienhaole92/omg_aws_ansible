@@ -1,0 +1,26 @@
+---
+## This playbook deploys the whole application stack in this site.
+- name: setup pre-requisites
+  hosts: all
+  become: yes
+  roles:
+    - docker
+    - docker-compose
+
+- name: initialize docker swarm
+  hosts: controller
+  become: yes
+  roles:
+    - docker-swarm-init
+
+- name: add managers to the swarm
+  hosts: managers
+  become: yes
+  roles:
+    - docker-swarm-add-manager
+
+- name: add workers to the swarm
+  hosts: workers
+  become: yes
+  roles:
+    - docker-swarm-add-worker
