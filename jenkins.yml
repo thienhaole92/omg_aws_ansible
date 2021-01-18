@@ -1,0 +1,6 @@
+---
+- name: installing jenkins
+  hosts: grafana
+  become: yes
+  roles:
+    - jenkins

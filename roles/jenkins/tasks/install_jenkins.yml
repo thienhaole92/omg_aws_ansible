@@ -1,0 +1,48 @@
+---
+- name: ensure the jenkins apt repository key is installed
+  apt_key: 
+    url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+    state: present
+
+- name: ensure the repository is configured
+  apt_repository: 
+    repo: deb https://pkg.jenkins.io/debian-stable binary/ 
+    state: present
+
+- name: install jenkins
+  apt:
+    name: jenkins
+    state: present
+    update_cache: true
+
+- name: start & enable jenkins
+  service: 
+    name: jenkins
+    state: started
+
+- name: sleep for 30 seconds and continue with play
+  wait_for: 
+    timeout: 30
+
+- name: get init password jenkins
+  shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+  changed_when: false
+  register: initial_admin_password
+
+- name: print init password jenkins
+  debug:
+    var: initial_admin_password.stdout
+
+# ---
+# - name: Create Jenkins group
+#   group:
+#     name: "{{ jenkins_config_group }}"
+#     state: present
+
+# - name: Create Jenkins user
+#   user:
+#     name: "{{ jenkins_config_owner }}"
+#     group: "{{ jenkins_config_group }}"
+#     home: "{{ jenkins_home }}"
+#     shell: "/bin/false"
+#     state: present

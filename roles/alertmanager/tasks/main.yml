@@ -1,0 +1,73 @@
+---
+- name: creating alertmanager user group
+  group: name="{{group_id}}"
+  become: true
+
+- name: creating alertmanager user
+  user:
+    name: "{{user_id}}"
+    group: "{{group_id}}"
+    system: yes
+    shell: "/sbin/nologin"
+    comment: "{{user_id}} no login user"
+    createhome: "no"
+    state: present
+
+- name: download alertmanager
+  unarchive:
+    src: "https://github.com/prometheus/alertmanager/releases/download/v{{ version }}/alertmanager-{{ version }}.linux-amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: copy alertmanager executable to bin
+  copy:
+    src: "/tmp/alertmanager-{{ version }}.linux-amd64/alertmanager"
+    dest: "/usr/local/bin/alertmanager"
+    owner: "{{user_id}}"
+    group: "{{group_id}}"
+    remote_src: yes
+    mode: 0755
+
+- name: delete alertmanager tmp folder
+  file:
+    path: '/tmp/alertmanager-{{ version }}.linux-amd64'
+    state: absent
+
+- name: Creates data directory
+  file: 
+    path: "/data/alertmanager/"
+    state: directory
+    owner: "{{user_id}}"
+    group: "{{group_id}}"
+    mode: 0755
+
+- name: creates config directory
+  file: 
+    path: "/etc/alertmanager/"
+    state: directory
+    owner: "{{user_id}}"
+    group: "{{group_id}}"
+    mode: 0755
+
+- name: copy config file
+  copy:
+    src: "{{ role_path }}/files/alertmanager.yml"
+    dest: /etc/alertmanager/alertmanager.yml
+
+- name: copy systemd init file
+  template:
+    src: init.service.j2
+    dest: /etc/systemd/system/alertmanager.service
+  notify: systemd_reload
+
+- name: start alertmanager service
+  service:
+    name: alertmanager
+    state: started
+    enabled: yes
+
+- name: check if alertmanager is accessible
+  uri:
+    url: http://localhost:9093
+    method: GET
+    status_code: 200

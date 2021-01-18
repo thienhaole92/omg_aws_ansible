@@ -1,0 +1,24 @@
+---
+- name: create certbot scripts directory
+  file:
+    path: /opt/certbot/scripts
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: copy certbot script
+  template:
+    src: run_certbot.j2
+    dest: /opt/certbot/scripts/run_certbot
+    owner: root
+    group: root
+    mode: 0755
+
+- name: link certbot script as cronjob
+  file:
+    src: /opt/certbot/scripts/run_certbot
+    dest: /etc/cron.daily/run_certbot
+    owner: root
+    group: root
+    state: link

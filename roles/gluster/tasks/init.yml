@@ -1,0 +1,49 @@
+- name: check if gluster volume is initialized
+  stat:
+    path: "{{gluster_volume_path}}/{{inventory_hostname}}/brick"
+  register: glustervolume
+
+- name: verify gluster volume path
+  become: true
+  become_method: sudo
+  file:
+    path: "{{gluster_volume_path}}/{{inventory_hostname}}/brick"
+    state: directory
+
+- name: initialize gluster custer (on first node)
+  when: glustervolume.stat.exists == false and inventory_hostname == groups['glusters'][0]
+  become: true
+  become_method: sudo
+  loop: "{{ groups['glusters'] }}"
+  shell: gluster peer probe {{ item }}
+
+- name: create cluster volume (on first node)
+  when: glustervolume.stat.exists == false and inventory_hostname == groups['glusters'][0]
+  become: true
+  become_method: sudo
+  shell: >
+    gluster volume create {{gluster_volume_name}} \
+    replica 3 \
+    {{groups['glusters'][0]}}:{{gluster_volume_path}}/{{groups['glusters'][0]}}/brick \
+    {{groups['glusters'][1]}}:{{gluster_volume_path}}/{{groups['glusters'][1]}}/brick \
+    {{groups['glusters'][2]}}:{{gluster_volume_path}}/{{groups['glusters'][2]}}/brick
+    
+- name: secure gluster volume (on first node)
+  when: inventory_hostname == groups['glusters'][0]
+  become: true
+  become_method: sudo
+  shell: >
+    gluster volume set {{gluster_volume_name}} auth.allow  \
+    {{groups['glusters'][0]}},{{groups['glusters'][1]}},{{groups['glusters'][2]}}
+
+- name: start gluster volume (on first node)
+  when: glustervolume.stat.exists == false and inventory_hostname == groups['glusters'][0]
+  become: true
+  become_method: sudo
+  shell: gluster volume start {{gluster_volume_name}}
+
+- name: wait 60s for gluster volume to be replicated
+  when: glustervolume.stat.exists == false and inventory_hostname == groups['glusters'][0]
+  become: true
+  become_method: sudo
+  shell: sleep 60

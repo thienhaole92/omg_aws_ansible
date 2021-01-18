@@ -1,0 +1,6 @@
+---
+- name: jenkins is started
+  service:
+    name: jenkins
+    state: started
+  changed_when: false

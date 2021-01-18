@@ -1,0 +1,23 @@
+---
+- name: ensure jenkins directory on docker host
+  file:
+    state: directory
+    owner: 1000
+    group: 1000
+    path: /share/jenkins
+
+- name: pull the latest official jenkins docker image
+  docker_image:
+    name: "{{docker_jenkins_image}}"
+
+- name: create a container from the jenkins docker image
+  docker_container:
+    name: "{{docker_jenkins_container}}"
+    image: "{{docker_jenkins_image}}"
+    ports:
+        - "8080:8080"
+        - "50000:50000"
+    volumes:
+        - "/share/jenkins:/var/jenkins_home"
+    state: present
+    recreate: no

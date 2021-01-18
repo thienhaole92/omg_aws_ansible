@@ -1,5 +1,4 @@
 ---
-## This playbook deploys the whole application stack in this site.
 - name: setup pre-requisites
   hosts: all
   become: yes
@@ -7,12 +6,6 @@
     - host-defaults
     - docker
     - docker-compose
-
-- name: initialize docker swarm
-  hosts: controller
-  become: yes
-  roles:
-    - docker-swarm-init
 
 - name: add managers to the swarm
   hosts: managers
@@ -26,10 +19,26 @@
   roles:
     - docker-swarm-add-worker
 
-- name: deploy portainer
-  hosts: controller
+- name: configures the second drive (sdb) with a XFS file system
+  hosts: glusters
+  tasks:
+    - include_vars: "{{playbook_dir}}/config.yml"
+    - import_role:
+        name: gluster
+
+- name: deploy portainer and traefik
+  hosts: managers
   become: yes
   tasks:
     - include_vars: "{{playbook_dir}}/config.yml"
     - import_role:
+        name: traefik
+    - import_role:
         name: portainer
+
+- name: deploy haproxy
+  hosts: haproxy
+  tasks:
+    - include_vars: "{{playbook_dir}}/config.yml"
+    - import_role:
+        name: haproxy

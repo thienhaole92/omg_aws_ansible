@@ -1,4 +1,6 @@
 up:
-	vagrant up /node-./
+	vagrant up
+halt:
+	vagrant halt
 destroy:
-	vagrant destroy /node-./
+	vagrant destroy

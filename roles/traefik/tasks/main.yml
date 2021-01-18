@@ -1,0 +1,40 @@
+---
+- name: verify stacks directory exists (on first swarm node)
+  when: inventory_hostname == groups['managers'][0]
+  file:
+    path: "/home/{{ansible_user}}/stacks"
+    state: directory
+
+- name: generate admin password hash
+  when: inventory_hostname == groups['managers'][0]
+  shell: echo $(htpasswd -nb {{traefik_admin_user}} {{traefik_admin_password}}) | sed -e s/\\$/\\$\\$/g
+  register: traefikpassword
+
+- name: create docker-compose stack file (on first swarm node)
+  when: inventory_hostname == groups['managers'][0]
+  template:
+    src: traefik-stack.j2
+    dest: /home/{{ansible_user}}/stacks/traefik-stack.yml
+    mode: 0775
+
+- name: install jsondiff python library
+  when: inventory_hostname == groups['managers'][0]
+  become: true
+  become_method: sudo
+  pip:
+    name: jsondiff
+
+- name: install pyyaml python library
+  when: inventory_hostname == groups['managers'][0]
+  become: true
+  become_method: sudo
+  pip:
+    name: pyyaml
+
+- name: deploy traefik stack from a compose file (on first swarm node)
+  when: inventory_hostname == groups['managers'][0]
+  docker_stack:
+    state: present
+    name: traefik
+    compose:
+      - /home/{{ansible_user}}/stacks/traefik-stack.yml

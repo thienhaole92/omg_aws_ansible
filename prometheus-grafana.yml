@@ -1,0 +1,32 @@
+---
+- name: installing alertmanager
+  hosts: alertmanager
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    - alertmanager
+
+- name: installing node exporter
+  hosts: node_exporter
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    - prometheus-node-exporter
+
+- name: installing node prometheus
+  hosts: prometheus
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    - prometheus
+
+- name: installing node grafana
+  hosts: grafana
+  become: yes
+  become_user: root
+  become_method: sudo
+  roles:
+    - grafana

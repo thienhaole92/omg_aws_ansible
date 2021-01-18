@@ -1,0 +1,10 @@
+---       
+- name: install openjdk 11
+  become: yes
+  become_user: root
+  become_method: sudo
+  apt:
+    name: "{{ packages }}"  
+  vars:
+    packages:    
+    - openjdk-11-jdk

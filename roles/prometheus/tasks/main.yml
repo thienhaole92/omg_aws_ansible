@@ -1,0 +1,86 @@
+---
+- name: creating prometheus user group
+  group: name="{{group_id}}"
+  become: true
+
+- name: creating prometheus user
+  user:
+    name: "{{user_id}}"
+    group: "{{group_id}}"
+    system: yes
+    shell: "/sbin/nologin"
+    comment: "{{user_id}} no login user"
+    createhome: "no"
+    state: present
+
+- name: install prometheus
+  unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v{{ version }}/prometheus-{{ version }}.linux-amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: copy prometheus file to bin
+  copy:
+    src: "/tmp/prometheus-{{ version }}.linux-amd64/prometheus"
+    dest: "/usr/local/bin/prometheus"
+    owner: "{{user_id}}"
+    group: "{{group_id}}"
+    remote_src: yes
+    mode: 0755
+
+- name: delete prometheus tmp folder
+  file:
+    path: '/tmp/prometheus-{{ version }}.linux-amd64'
+    state: absent
+
+- name: creates directory
+  file: 
+    path: "/data/prometheus/"
+    state: directory
+    owner: "{{user_id}}"
+    group: "{{group_id}}"
+    mode: 0755
+
+- name: creates directory
+  file: 
+    path: "/etc/prometheus/"
+    state: directory
+    owner: "{{user_id}}"
+    group: "{{group_id}}"
+    mode: 0755
+
+- name: prometheus config file
+  template:
+    src: prometheus.conf.j2
+    dest: /etc/prometheus/prometheus.conf
+
+- name: display prometheus.conf contents
+  command: cat prometheus.conf chdir=/etc/prometheus
+  register: command_output
+
+- name: print prometheus config file to console
+  debug:
+    msg: "{{command_output.stdout}}"
+
+- name: alertrules config file
+  copy:
+    src: "{{ role_path }}/files/alertrules.yml"
+    dest: /etc/prometheus/alert.rules.yml
+
+- name: copy systemd init file
+  template:
+    src: init.service.j2
+    dest: /etc/systemd/system/prometheus.service
+  notify: systemd_reload
+
+- name: start prometheus service
+  service:
+    name: prometheus
+    state: started
+    enabled: yes
+
+- name: check if prometheus is accessible
+  uri:
+    url: http://localhost:9090
+    method: GET
+    status_code: 200

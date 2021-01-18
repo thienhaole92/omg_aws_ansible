@@ -1,8 +1,3 @@
-- name: download docker convenience script
-  get_url:
-    url: https://get.docker.com
-    dest: /tmp/get-docker.sh
-    mode: "u+x"
-
-- name: execute docker convenience script
-  shell: /tmp/get-docker.sh
+---
+- import_tasks: docker.yml
+- import_tasks: plugins.yml

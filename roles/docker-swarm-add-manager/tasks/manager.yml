@@ -1,0 +1,9 @@
+---
+- name: check if swarm has already been initialized
+  shell: docker node ls
+  register: swarm_status
+  ignore_errors: true
+
+- name: add docker node to existing swarm as manager
+  shell: docker swarm join --token {{hostvars[groups['managers'][0]]['manager_token']['stdout']}} {{groups['managers'][0]}}:2377
+  when: swarm_status.rc != 0 and inventory_hostname != groups['managers'][0]

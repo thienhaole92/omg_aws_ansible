@@ -1,62 +1,83 @@
-[node0]
-192.168.50.20
+[ha]
+10.10.10.10
 
-[node0:vars]
+[ha:vars]
 ansible_user=vagrant
 ansible_connection=ssh
 host_key_checking = False
-ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/node-0/virtualbox/private_key
+ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/haproxy/virtualbox/private_key
 
-[node1]
-192.168.50.21
+[docker01]
+10.10.10.20
 
-[node1:vars]
+[docker01:vars]
 ansible_user=vagrant
 ansible_connection=ssh
 host_key_checking = False
-ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/node-1/virtualbox/private_key
+ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/docker01/virtualbox/private_key
+device2_hdd_dev=/dev/sdc
 
-[node2]
-192.168.50.22
+[docker02]
+10.10.10.30
 
-[node2:vars]
+[docker02:vars]
 ansible_user=vagrant
 ansible_connection=ssh
 host_key_checking = False
-ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/node-2/virtualbox/private_key
+ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/docker02/virtualbox/private_key
+device2_hdd_dev=/dev/sdc
 
-[node3]
-192.168.50.23
+[docker03]
+10.10.10.40
 
-[node3:vars]
+[docker03:vars]
 ansible_user=vagrant
 ansible_connection=ssh
 host_key_checking = False
-ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/node-3/virtualbox/private_key
+ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/docker03/virtualbox/private_key
+device2_hdd_dev=/dev/sdc
 
-[node4]
-192.168.50.24
+[monitor]
+10.10.10.50
 
-[node4:vars]
+[monitor:vars]
 ansible_user=vagrant
 ansible_connection=ssh
 host_key_checking = False
-ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/node-4/virtualbox/private_key
+ansible_ssh_private_key_file=/Users/haole/Documents/Working/aws/omg_aws_ansible/vagrant/.vagrant/machines/monitor/virtualbox/private_key
+
 
 [all:children]
-node0
-node1
-node2
-node3
-node4
-
-[controller:children]
-node0
+ha
+monitor
+docker01
+docker02
+docker03
 
 [managers:children]
-node1
-node2
+docker01
+docker02
+docker03
 
-[workers:children]
-node3
-node4
+[glusters:children]
+docker01
+docker02
+docker03
+
+[haproxy:children]
+ha
+
+[alertmanager:children]
+monitor
+
+[node_exporter:children]
+monitor
+docker01
+docker02
+docker03
+
+[grafana:children]
+monitor
+
+[prometheus:children]
+monitor
