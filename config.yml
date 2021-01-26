@@ -24,4 +24,4 @@ certbot_email: thienhaole92@gmail.com
 app_domains:
   - portainer.sweego.vn
   - traefik.sweego.vn
-  - jenkins.sweego.vn
+  - api8.sweego.vn
