@@ -10,7 +10,7 @@
   changed_when: false
 
 - name: show docker info
-  debug: var=docker_info.stderr
+  debug: var=docker_info.stdout
 
 - name: add workers to the swarm
   vars:
