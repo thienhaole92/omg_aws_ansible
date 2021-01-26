@@ -17,7 +17,8 @@
     token: "{{ hostvars[groups['managers'][0]]['worker_token']['stdout'] }}"
     master: "{{ hostvars[groups['managers'][0]]['inventory_hostname'] }}"
   command: docker swarm join --token {{ token }} {{ master }}:2377
-  when: 'Swarm: active' not in docker_info.stdout and
+  when: >
+        'Swarm: active' not in docker_info.stdout and
         'Swarm: pending' not in docker_info.stdout
   register: worker
 
