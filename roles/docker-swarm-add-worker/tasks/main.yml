@@ -9,7 +9,7 @@
     token: "{{ hostvars[groups['managers'][0]]['worker_token']['stdout'] }}"
     master: "{{ hostvars[groups['masters'][0]]['inventory_hostname'] }}"
   tasks:
-    - name: join Swarm cluster as a worker
+    - name: join swarm cluster as a worker
       command: docker swarm join --token {{ token }} {{ master }}:2377
       when: swarm_status.rc != 0
       register: worker
