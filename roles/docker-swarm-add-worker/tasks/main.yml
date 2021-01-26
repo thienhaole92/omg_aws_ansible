@@ -7,7 +7,7 @@
 - name: add workers to the swarm
   vars:
     token: "{{ hostvars[groups['managers'][0]]['worker_token']['stdout'] }}"
-    master: "{{ hostvars[groups['masters'][0]]['inventory_hostname'] }}"
+    master: "{{ hostvars[groups['managers'][0]]['inventory_hostname'] }}"
   command: docker swarm join --token {{ token }} {{ master }}:2377
   when: swarm_status.rc != 0
   register: worker
