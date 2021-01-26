@@ -4,6 +4,14 @@
   register: swarm_status
   ignore_errors: true
 
+- name: "get docker info"
+  command: docker info
+  register: docker_info
+  changed_when: false
+
+- name: show docker info
+  debug: var=docker_info.stderr
+
 - name: add workers to the swarm
   vars:
     token: "{{ hostvars[groups['managers'][0]]['worker_token']['stdout'] }}"
