@@ -18,3 +18,12 @@
   when: inventory_hostname == groups['managers'][0]
   shell: docker swarm join-token --quiet worker
   register: worker_token
+
+- name: docker node info
+  docker_node_info:
+    name: worker
+  register: worker_status
+
+- name: debug
+  debug:
+    msg: "{{ worker_status }}"
