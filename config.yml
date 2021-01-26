@@ -1,5 +1,5 @@
 ---
-app_domain_name: docker.local
+app_domain_name: sweego.vn
 gluster_volume_path: /glusterfs/bricks
 gluster_volume_name: gfs
 gluster_mount_path: /mnt/gfs
@@ -22,6 +22,6 @@ haproxy_stats_user: admin
 haproxy_stats_password: password1234
 certbot_email: thienhaole92@gmail.com
 app_domains:
-  - portainer.docker.local
-  - traefik.docker.local
-  - jenkins.docker.local
+  - portainer.sweego.vn
+  - traefik.sweego.vn
+  - jenkins.sweego.vn
