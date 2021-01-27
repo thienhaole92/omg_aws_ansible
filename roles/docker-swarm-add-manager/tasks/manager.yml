@@ -5,5 +5,9 @@
   ignore_errors: true
 
 - name: add docker node to existing swarm as manager
-  shell: docker swarm join --token {{hostvars[groups['managers'][0]]['manager_token']['stdout']}} {{groups['managers'][0]}}:2377
+  # shell: docker swarm join --token {{hostvars[groups['managers'][0]]['manager_token']['stdout']}} {{groups['managers'][0]}}:2377
+  vars:
+    token: "{{ hostvars[groups['managers'][0]]['manager_token']['stdout'] }}"
+    master: "{{ hostvars[groups['managers'][0]]['inventory_hostname'] }}"
+  command: docker swarm join --token {{ token }} {{ master }}:2377
   when: swarm_status.rc != 0 and inventory_hostname != groups['managers'][0]
