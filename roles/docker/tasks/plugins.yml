@@ -5,7 +5,7 @@
   ignore_errors: true
 
 - name: install docker gluster plugin
-  shell: docker plugin install --alias glusterfs trajano/glusterfs-volume-plugin --grant-all-permissions --disable
+  shell: docker plugin install --alias glusterfs trajano/glusterfs-volume-plugin:v2.0.3 --grant-all-permissions --disable
   when: gluster_plugin_status.rc != 0
 
 - name: set gluster plugin to use gluster nodes
