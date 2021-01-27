@@ -9,3 +9,9 @@ monitor:
 
 jenkins:
 	ansible-playbook -i hosts jenkins.yml
+
+haproxy:
+	ansible-playbook -i hosts haproxy.yml
+
+pt:
+	ansible-playbook -i hosts portainer-traefik.yml

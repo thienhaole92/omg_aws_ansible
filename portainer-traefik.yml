@@ -1,0 +1,10 @@
+---
+- name: deploy portainer and traefik
+  hosts: managers
+  become: yes
+  tasks:
+    - include_vars: "{{playbook_dir}}/config.yml"
+    - import_role:
+        name: traefik
+    - import_role:
+        name: portainer
