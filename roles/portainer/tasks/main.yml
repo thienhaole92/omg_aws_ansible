@@ -41,6 +41,8 @@
 
 - name: deploy portainer stack from a compose file (on first swarm node)
   when: inventory_hostname == groups['managers'][0]
+  become: true
+  become_method: sudo
   docker_stack:
     state: present
     name: portainer

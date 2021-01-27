@@ -24,3 +24,10 @@ alerting:
     - static_configs:
         - targets:
             - '172.31.2.55:9093'
+
+
+docker swarm how to find out why service can't start
+
+docker service ps --no-trunc {serviceName}
+
+journalctl -u docker.service | tail -n 50 
