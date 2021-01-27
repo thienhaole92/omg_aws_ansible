@@ -25,6 +25,6 @@
 - name: show results
   debug: var=worker.stdout
 
-- name: show rrrors
-  debug: var=worker.stderr
+- name: show errors
+  debug: var=worker.stdout
   
