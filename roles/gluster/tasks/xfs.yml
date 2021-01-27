@@ -23,8 +23,8 @@
     fstype: xfs
     state: mounted
 
-- name: ensure mount paths permissions
-  file: 
-    path: "{{gluster_volume_path}}/{{inventory_hostname}}"
-    state: directory
-    mode: 0775
+# - name: ensure mount paths permissions
+#   file: 
+#     path: "{{gluster_volume_path}}/{{inventory_hostname}}"
+#     state: directory
+#     mode: 0775
