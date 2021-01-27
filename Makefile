@@ -18,3 +18,6 @@ pt:
 
 gluster:
 	ansible-playbook -i hosts gluster.yml
+
+swarm:
+	ansible-playbook -i hosts swarm.yml
