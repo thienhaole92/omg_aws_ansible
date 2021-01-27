@@ -10,4 +10,4 @@
     token: "{{ hostvars[groups['managers'][0]]['manager_token']['stdout'] }}"
     master: "{{ hostvars[groups['managers'][0]]['inventory_hostname'] }}"
   command: docker swarm join --token {{ token }} {{ master }}:2377
-  when: inventory_hostname != groups['managers'][0]
+  # when: inventory_hostname != groups['managers'][0]
