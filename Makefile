@@ -15,3 +15,6 @@ haproxy:
 
 pt:
 	ansible-playbook -i hosts portainer-traefik.yml
+
+gluster:
+	ansible-playbook -i hosts gluster.yml
