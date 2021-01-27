@@ -28,3 +28,11 @@
 - name: debug
   debug:
     msg: "{{ worker_status }}"
+
+- name: debug worker token
+  debug:
+    msg: "{{ worker_token }}"
+
+- name: debug manager token
+  debug:
+    msg: "{{ manager_token }}"
