@@ -44,5 +44,6 @@
   docker_stack:
     state: present
     name: portainer
+    prune: yes
     compose:
       - /home/{{ansible_user}}/stacks/portainer-agent-stack.yml

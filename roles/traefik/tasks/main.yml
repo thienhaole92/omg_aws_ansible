@@ -36,5 +36,6 @@
   docker_stack:
     state: present
     name: traefik
+    prune: yes
     compose:
       - /home/{{ansible_user}}/stacks/traefik-stack.yml
