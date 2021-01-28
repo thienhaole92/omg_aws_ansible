@@ -3,6 +3,11 @@
   ansible.builtin.apt_repository:
     repo: deb http://httpredir.debian.org/debian stretch-backports main
     state: present
+    update_cache: false
+
+- name: Run the equivalent of "apt-get update"
+  apt:
+    update_cache: yes
 
 - name: install haproxy
   apt:
