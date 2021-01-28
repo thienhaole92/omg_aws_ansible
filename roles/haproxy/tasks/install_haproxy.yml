@@ -1,26 +1,15 @@
 ---
-# - name: add "stretch-backports" to sources (required for haproxy 1.8)
-#   apt_repository:
-#     repo: deb http://httpredir.debian.org/debian stretch-backports main
-#     state: present
-#     update_cache: yes
-
-# - name: install haproxy
-#   apt:
-#     name: haproxy
-#     state: present
-#     default_release: stretch-backports
-#     cache_valid_time: 3600
+- name: add "stretch-backports" to sources (required for haproxy 1.8)
+  ansible.builtin.apt_repository:
+    repo: deb http://httpredir.debian.org/debian stretch-backports main
+    state: present
 
 - name: install haproxy
-  become: true
-  become_method: sudo
   apt:
-    pkg:
-      - haproxy
-    state: latest
-    force_apt_get: true
-    update_cache: yes
+    name: haproxy
+    state: present
+    default_release: stretch-backports
+    cache_valid_time: 3600
 
 - name: check if the Certbot certificates exist
   stat:

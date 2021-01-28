@@ -1,9 +1,8 @@
 ---
 - name: add "stretch-backports" to sources (required for haproxy 1.8)
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: deb http://httpredir.debian.org/debian stretch-backports main
     state: present
-    update_cache: yes
 
 - name: install certbot
   apt:
