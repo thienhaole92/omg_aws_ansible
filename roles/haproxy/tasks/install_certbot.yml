@@ -13,7 +13,7 @@
   apt:
     name: python-certbot
     state: present
-    default_release: stretch-backports
+    # default_release: stretch-backports
     cache_valid_time: 3600
 
 - name: create "certbot" group

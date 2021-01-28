@@ -13,7 +13,7 @@
   apt:
     name: haproxy
     state: present
-    default_release: stretch-backports
+    # default_release: stretch-backports
     cache_valid_time: 3600
 
 - name: check if the Certbot certificates exist
