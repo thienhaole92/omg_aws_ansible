@@ -1,0 +1,86 @@
+---
+- name: add ppa
+  apt_repository:
+    repo: "ppa:nginx/stable"
+    state: present
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == '16.04'
+
+- name: install
+  apt:
+    name: nginx
+    state: latest
+  notify:
+    - restart nginx
+
+- name: install passlib python2
+  apt:
+    name: python-passlib
+    state: latest
+  when: ansible_python_version[0] == "2"
+
+- name: install passlib python3
+  apt:
+    name: python3-passlib
+    state: latest
+  when: ansible_python_version[0] == "3"
+
+- name: auth directory
+  file:
+    path: /etc/nginx/auth
+    state: directory
+
+- name: configure nginx
+  template:
+    src: etc/nginx/conf.d/ansible.conf.j2
+    dest: /etc/nginx/conf.d/ansible.conf
+  notify: restart nginx
+
+- name: generate certificates
+  include_role:
+    name: pyslackers.letsencrypt
+  vars:
+    domains: "{{ item.value.domains }}"
+    letsencrypt: "{{ item.value.letsencrypt }}"
+    webserver: nginx
+  with_dict: "{{ nginx_sites }}"
+  when: item.value.letsencrypt is defined and item.value.letsencrypt
+  loop_control:
+    label: "{{ item.value.domains | default(item.key) }}"
+
+- include_tasks: sites.yml
+  with_dict: "{{ nginx_sites }}"
+  loop_control:
+    loop_var: nginx_site
+
+- name: disable default
+  file:
+    dest: /etc/nginx/sites-enabled/default
+    state: absent
+  when: nginx_sites | length > 0
+  notify:
+    - reload nginx
+
+- name: enable nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Allow all access to tcp port 80
+  community.general.ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+  when:
+    - ufw_enabled
+    - not fullchain.stat.exists
+
+- name: Allow all access to tcp port 443
+  community.general.ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
+  when:
+    - ufw_enabled
+    - not fullchain.stat.exists
