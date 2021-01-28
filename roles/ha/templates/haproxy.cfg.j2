@@ -91,6 +91,3 @@ backend docker_swarm_layer7
   {% for manager in groups['managers'] %}
   server manager{{ loop.index }} {{ manager }}:80 check port 80
   {% endfor %}
-  # {% for worker in groups['workers'] %}
-  # server worker{{ loop.index }} {{ worker }}:80 check port 80
-  # {% endfor %}
