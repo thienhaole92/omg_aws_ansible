@@ -62,7 +62,7 @@ frontend http
   default_backend docker_swarm_layer7
 
 frontend https
-  bind *:443 ssl crt /{{ domains | first }}/privkeyandcert.pem
+  bind *:443 ssl crt /etc/letsencrypt/live/{{ domains | first }}/privkeyandcert.pem
 
   http-request set-header X-Forwarded-Scheme https
   http-response set-header Strict-Transport-Security max-age=31536000;includeSubDomains;preload
