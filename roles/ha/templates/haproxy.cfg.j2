@@ -75,7 +75,7 @@ frontend https
   acl letsencrypt-acl path_beg /.well-known/acme-challenge/
   use_backend srv-letsencrypt if letsencrypt-acl
 
-  default_backend backend docker_swarm_layer7
+  default_backend docker_swarm_layer7
 
 backend srv-letsencrypt
   server letsencrypt 127.0.0.1:{{ certbot_port }}
