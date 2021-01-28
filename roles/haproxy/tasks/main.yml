@@ -10,8 +10,8 @@
 #     update_cache: yes
 
 # - name: copy cert generation script to host
-#   become: true
-#   become_method: sudo
+  # become: true
+  # become_method: sudo
 #   template:
 #     src: generate_certs.j2
 #     dest: /tmp/generate_certs.sh
