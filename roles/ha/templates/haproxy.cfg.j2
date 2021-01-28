@@ -89,8 +89,9 @@ backend docker_swarm_layer7
   option tcp-check
   option log-health-checks
   {% for manager in groups['managers'] %}
-  server manager{{ loop.index }} {{groups['managers'][loop.index]}}:80 check port 80
+  # {{ manager }}
+  server manager{{ loop.index }} {{groups['managers'][loop.index - 1]}}:80 check port 80
   {% endfor %}
   # {% for worker in groups['workers'] %}
-  # server worker{{ loop.index }} {{groups['workers'][loop.index]}}:80 check port 80
+  # server worker{{ loop.index }} {{groups['workers'][loop.index - 1]}}:80 check port 80
   # {% endfor %}
