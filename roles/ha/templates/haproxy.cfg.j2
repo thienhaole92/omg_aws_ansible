@@ -2,6 +2,9 @@
 # Global settings
 #---------------------------------------------------------------------
 global
+  # maxconn 50000
+  # maxpipes 50000
+  # tune.maxaccept 500
   log /dev/log    local0 debug
   log /dev/log    local1 notice
   # chroot /var/lib/haproxy
@@ -85,6 +88,9 @@ backend docker_swarm_layer7
   balance source
   option tcp-check
   option log-health-checks
-  server host01 {{groups['managers'][0]}}:80 check port 80
-  server host02 {{groups['managers'][1]}}:80 check port 80
-  server host03 {{groups['managers'][2]}}:80 check port 80
+  {% for manager in groups['managers'] %}
+  server manager{{ loop.index }} {{groups['managers'][loop.index]}}:80 check port 80
+  {% endfor %}
+  # {% for worker in groups['workers'] %}
+  # server worker{{ loop.index }} {{groups['workers'][loop.index]}}:80 check port 80
+  # {% endfor %}
