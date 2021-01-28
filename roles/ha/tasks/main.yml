@@ -2,7 +2,7 @@
 - name: add ppa
   apt_repository:
     repo: "ppa:{{ item }}"
-    update_cache: yes
+    update_cache: no
   when: ansible_distribution == 'Ubuntu'
   with_items:
     - vbernat/haproxy-1.8
