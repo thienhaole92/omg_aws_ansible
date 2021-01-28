@@ -1,0 +1,58 @@
+---
+
+- name: add ppa
+  apt_repository:
+    repo: ppa:certbot/certbot
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu'
+
+- name: install certbot
+  apt:
+    name: certbot
+    state: latest
+
+- name: "certificate exist for {{ domains | first }}"
+  stat:
+    path: "/etc/letsencrypt/live/{{ domains | first  }}/fullchain.pem"
+  register: fullchain
+
+- name: "stop {{ webserver }}"
+  service:
+    name: "{{ webserver }}"
+    state: stopped
+  when: not fullchain.stat.exists
+
+- name: enable UFW rule
+  # ufw:
+  #   rule: allow
+  #   name: 'Nginx Full'
+  community.general.ufw:
+    rule: allow
+    name: Nginx Full
+  when:
+    - ufw_enabled
+    - not fullchain.stat.exists
+
+- name: "generate ssl certificates for {{ domains | first }}"
+  command: "certbot certonly --standalone --email {{ email }} --agree-tos -n -d {{ domains | join(' -d ') }}"
+  when:
+    - not fullchain.stat.exists
+
+- name: assemble certificates
+  shell: "cat /etc/letsencrypt/live/{{ domains | first }}/privkey.pem /etc/letsencrypt/live/{{ domains | first }}/fullchain.pem > /etc/letsencrypt/live/{{ domains | first }}/privkeyandcert.pem"
+  when:
+    - not fullchain.stat.exists
+
+- name: post renew script
+  template:
+    src: post-renew.sh.j2
+    dest: /etc/letsencrypt/post-renew.sh
+    mode: 0744
+
+- name: certificates autorenew cron
+  cron:
+    name: auto renew letsencrypt certificates
+    minute: 1
+    hour: 23
+    weekday: 0
+    job: '/usr/bin/certbot renew --preferred-challenges http --http-01-port {{ certbot_port }} --quiet --post-hook "/bin/bash /etc/letsencrypt/post-renew.sh"'

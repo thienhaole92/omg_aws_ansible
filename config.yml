@@ -25,3 +25,9 @@ app_domains:
   - portainer.omydev.com
   - traefik.omydev.com
   - api8.omydev.com
+webserver: haproxy
+email: thienhaole92@gmail.com
+domains: 
+  - portainer.omydev.com
+  - traefik.omydev.com
+  - api8.omydev.com

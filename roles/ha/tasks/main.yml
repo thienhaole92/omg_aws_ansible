@@ -1,0 +1,27 @@
+---
+- name: add ppa
+  apt_repository:
+    repo: "ppa:{{ item }}"
+    update_cache: yes
+  when: ansible_distribution == 'Ubuntu'
+  with_items:
+    - vbernat/haproxy-1.8
+
+- name: install haproxy
+  apt:
+    name: haproxy
+    state: latest
+
+- name: configure haproxy
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0644
+    validate: haproxy -f %s -c -q
+  notify: reload haproxy
+
+- name: enable haproxy
+  service:
+    name: haproxy
+    state: started
+    enabled: yes
