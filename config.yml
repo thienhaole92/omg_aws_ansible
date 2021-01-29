@@ -20,14 +20,35 @@ traefik_admin_user: admin
 traefik_admin_password: password1234
 haproxy_stats_user: admin
 haproxy_stats_password: password1234
-certbot_email: thienhaole92@gmail.com
-app_domains:
-  - portainer.omydev.com
-  - traefik.omydev.com
-  - api8.omydev.com
 webserver: haproxy
-email: thienhaole92@gmail.com
+certbot_email: thienhaole92@gmail.com
 domains: 
   - portainer.omydev.com
   - traefik.omydev.com
   - api8.omydev.com
+nginx_custom_configurations:
+  server_names_hash_bucket_size: 64
+nginx_sites:
+  omydev:
+    domains:
+      - portainer.omydev.com
+      - traefik.omydev.com
+      - api8.omydev.com
+    locations:
+      - location: /websocket
+        websocket: true
+        proxy_pass: 'http://127.0.0.1:5000'
+      - location: /custom
+        proxy_pass: 'http://127.0.0.1:5001'
+        custom: |
+          proxy_set_header X-Hello-World hello;
+      - location: /static
+        static: /var/www/my_app/static/
+      - location: /
+        proxy_pass: 'http://127.0.0.1:5000'
+    errors:
+      '404': /var/www/my_app/static/404.html
+  pyslackers:
+    domains:
+      - pyslackers.com
+    template: pyslackers.j2

@@ -22,7 +22,7 @@
     state: stopped
   when: not fullchain.stat.exists
 
-- name: Allow all access to tcp port 80
+- name: allow all access to tcp port 80
   community.general.ufw:
     rule: allow
     port: '80'
@@ -31,7 +31,7 @@
     - ufw_enabled
     - not fullchain.stat.exists
 
-- name: Allow all access to tcp port 443
+- name: allow all access to tcp port 443
   community.general.ufw:
     rule: allow
     port: '443'
@@ -41,7 +41,7 @@
     - not fullchain.stat.exists
 
 - name: "generate ssl certificates for {{ domains | first }}"
-  command: "certbot certonly --standalone --email {{ email }} --agree-tos -n -d {{ domains | join(' -d ') }}"
+  command: "certbot certonly --standalone --email {{ certbot_email }} --agree-tos -n -d {{ domains | join(' -d ') }}"
   when:
     - not fullchain.stat.exists
 

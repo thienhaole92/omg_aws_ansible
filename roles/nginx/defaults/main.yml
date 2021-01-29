@@ -2,5 +2,5 @@
 certbot_port: 32456
 nginx_sites: {}
 nginx_auth: {}
-ufw_enabled: True
+ufw_enabled: true
 nginx_custom_configurations: {}
