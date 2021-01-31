@@ -1,0 +1,85 @@
+version: "3"
+services:
+  mongo1:
+    container_name: mongo1
+    image: thienhaole92/mongo1:dabe086f
+    expose:
+      - 27017
+    ports:
+      - 27011:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    volumes:
+      - "mongo_data:/data/db"
+    networks:
+      - mongodb-rs-network
+
+  mongo2:
+    container_name: mongo2
+    image: thienhaole92/mongo2:dabe086f
+    expose:
+      - 27017
+    ports:
+      - 27012:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      - mongodb-rs-network
+
+  mongo3:
+    container_name: mongo3
+    image: thienhaole92/mongo3:dabe086f
+    expose:
+      - 27017
+    ports:
+      - 27013:27017
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    networks:
+      - mongodb-rs-network
+
+  mongosetup:
+    container_name: mongosetup
+    image: thienhaole92/mongosetup:dabe086f
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    restart: "no"
+    entrypoint: [ "bash", "/scripts/setup-mongo.sh"]
+    networks:
+      - mongodb-rs-network
+
+  app:
+    container_name: app
+    image: thienhaole92/app:dabe086f
+    ports: 
+      - 4000:4000
+    depends_on:
+      - mongo1
+      - mongo2
+      - mongo3
+    networks:
+      - mongodb-rs-network
+      - web
+    restart: unless-stopped
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.app.rule=Host(`api8.omydev.com`)"
+        - "traefik.http.services.app.loadbalancer.server.port=4000"
+        - "traefik.docker.network=web"
+
+networks:
+  mongodb-rs-network:
+    driver: overlay
+    attachable: true
+    name: mongodb-rs-network
+  web:
+    external: true
+    name: web
+
+volumes:
+  mongo_data:
+    driver: glusterfs
+    name: "gfs/mongo_data"

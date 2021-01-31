@@ -21,3 +21,6 @@ gluster:
 
 swarm:
 	ansible-playbook -i hosts swarm.yml
+
+nginx:
+	ansible-playbook -i hosts nginx.yml

@@ -32,7 +32,7 @@
 
 - name: configure nginx
   template:
-    src: etc/nginx/conf.d/ansible.conf.j2
+    src: conf.d/ansible.conf.j2
     dest: /etc/nginx/conf.d/ansible.conf
   notify: restart nginx
 
@@ -62,7 +62,6 @@
     proto: tcp
   when:
     - ufw_enabled
-    - not fullchain.stat.exists
 
 - name: allow all access to tcp port 443
   community.general.ufw:
@@ -71,4 +70,3 @@
     proto: tcp
   when:
     - ufw_enabled
-    - not fullchain.stat.exists

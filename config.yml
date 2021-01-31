@@ -29,26 +29,51 @@ domains:
 nginx_custom_configurations:
   server_names_hash_bucket_size: 64
 nginx_sites:
-  omydev:
+  portainer:
+    letsencrypt: true
     domains:
       - portainer.omydev.com
-      - traefik.omydev.com
-      - api8.omydev.com
+      - www.portainer.omydev.com
+    services:
+      - service_name: swarm
+        balancing_type: 'ip_hash'
+        addresses:
+          - 172.31.20.251:80
+          - 172.31.20.38:80
+          - 172.31.20.89:80
     locations:
       - location: /websocket
         websocket: true
-        proxy_pass: 'http://127.0.0.1:5000'
-      - location: /custom
-        proxy_pass: 'http://127.0.0.1:5001'
-        custom: |
-          proxy_set_header X-Hello-World hello;
-      - location: /static
-        static: /var/www/my_app/static/
+        proxy_pass: 'http://swarm:5000'
       - location: /
-        proxy_pass: 'http://127.0.0.1:5000'
-    errors:
-      '404': /var/www/my_app/static/404.html
-  pyslackers:
+        proxy_pass: 'http://swarm'
+  traefik:
+    letsencrypt: true
     domains:
-      - pyslackers.com
-    template: pyslackers.j2
+      - traefik.omydev.com
+      - www.traefik.omydev.com
+    services:
+      - service_name: swarm
+        balancing_type: 'ip_hash'
+        addresses:
+          - 172.31.20.251:80
+          - 172.31.20.38:80
+          - 172.31.20.89:80
+    locations:
+      - location: /
+        proxy_pass: 'http://swarm'
+  api8:
+    letsencrypt: true
+    domains:
+      - api8.omydev.com
+      - www.api8.omydev.com
+    services:
+      - service_name: swarm
+        balancing_type: 'ip_hash'
+        addresses:
+          - 172.31.20.251:80
+          - 172.31.20.38:80
+          - 172.31.20.89:80
+    locations:
+      - location: /
+        proxy_pass: 'http://swarm'

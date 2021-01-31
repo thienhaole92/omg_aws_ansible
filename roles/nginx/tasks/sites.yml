@@ -13,7 +13,7 @@
 
 - name: "make {{ nginx_site.key }} available"
   template:
-    src: "{{ nginx_site.value.template | default('etc/nginx/sites-available/site-available.j2') }}"
+    src: "{{ nginx_site.value.template | default('sites-available/site-available.j2') }}"
     dest: "/etc/nginx/sites-available/{{ nginx_site.key }}"
   notify:
     - reload nginx
